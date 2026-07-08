@@ -40,3 +40,6 @@ PIN13 SCK  - Serial Clock (Gray)
 <img width="850" height="462" alt="image" src="https://github.com/user-attachments/assets/0a320017-6444-419c-8f27-0609c3548e66" />
 Source: 
 https://github.com/miguelbalboa/rfid
+
+<img width="866" height="281" alt="image" src="https://github.com/user-attachments/assets/06068ca1-1748-4e06-81f5-c315fff129f3" />
+

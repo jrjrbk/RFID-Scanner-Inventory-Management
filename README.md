@@ -7,13 +7,21 @@ PlatformIO
 Library Dependencies:
 
 Components Used:
+
 Arduino UNO R3
+
 USB Cable
+
 MB-102 Breadboard
+
 Jumper Wire
+
 Resistance
+
 Rc522 Module
+
 White Card & Key Chain RFID
+
 Data UID Lookup is stored in the Microcontroller's EEPROM
 
 

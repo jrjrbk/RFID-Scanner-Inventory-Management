@@ -1,0 +1,5 @@
+BasedOnStyle: LLVM
+IndentWidth: 2
+AllowShortLoopsOnASingleLine: true
+ReflowComments: false
+ColumnLimit: 0

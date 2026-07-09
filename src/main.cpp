@@ -40,8 +40,6 @@ void setup() {
   mfrc5222.PCD_DumpVersionToSerial();
 
   // Get the current time from the RTC module
-  RtcDateTime now = Rtc.GetDateTime();
-  printTime(now);
 }
 
 void loop() {
@@ -82,6 +80,8 @@ void loop() {
 
     Serial.println(F("The NUID tag is:"));
     dumpByteArray(mfrc5222.uid.uidByte, mfrc5222.uid.size);
+    RtcDateTime now = Rtc.GetDateTime();
+    printTime(now);
   } else
     Serial.println("Card read previously");
 

@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <MFRC522.h>
+#include <RtcDS1302.h>
 #include <SPI.h>
+#include <ThreeWire.h>
 
 // PICC = Proximity Integrated Circuit Card (Fancy Name for RFID)
 // PCD = Proximity Coupling Device (Fancy Name for RFID Reader)
@@ -8,6 +10,9 @@
 // Configuration SPI BUS
 #define RST_PIN 9  // Allows Arduino to reset/wake/power off RC522
 #define SDA_PIN 10 // Slave Select, enables Arduino to talk to RFID Reader
+
+ThreeWire myWire(6, 5, 7);
+RtcDS1302<ThreeWire> Rtc(myWire);
 
 // MFCR522 Object/Instance
 MFRC522 mfrc5222(SDA_PIN, RST_PIN);
@@ -17,7 +22,8 @@ byte nuidPICC[4];
 
 int myFunction(int, int);
 void resetBaudRate(MFRC522 &);
-void dump_byte_array(byte *, byte);
+void dumpByteArray(byte *, byte);
+void printTime(RtcDateTime);
 
 void setup() {
   // put your setup code here, to run once:
@@ -27,8 +33,15 @@ void setup() {
   SPI.begin();         // Initialize SPI bus (Allows communication of SDA_PIN and RST_PIN)
   mfrc5222.PCD_Init(); // Initialise MFRC522
 
+  Rtc.Begin();
+  // Rtc.SetDateTime(RtcDateTime(__DATE__, __TIME__)); //Initial date/time set. No need to run it again.
+
   // Check to see if working and print version
   mfrc5222.PCD_DumpVersionToSerial();
+
+  // Get the current time from the RTC module
+  RtcDateTime now = Rtc.GetDateTime();
+  printTime(now);
 }
 
 void loop() {
@@ -68,7 +81,7 @@ void loop() {
     }
 
     Serial.println(F("The NUID tag is:"));
-    dump_byte_array(mfrc5222.uid.uidByte, mfrc5222.uid.size);
+    dumpByteArray(mfrc5222.uid.uidByte, mfrc5222.uid.size);
   } else
     Serial.println("Card read previously");
 
@@ -94,10 +107,19 @@ void resetBaudRate(MFRC522 &mfrc5222) {
 /**
  * Helper routine to dump a byte array as hex values to Serial.
  */
-void dump_byte_array(byte *buffer, byte bufferSize) {
+void dumpByteArray(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(buffer[i] < 0x10 ? " 0" : " ");
     Serial.print(buffer[i], HEX);
   }
   Serial.println();
+}
+
+// Prints time in DD-MM-YYYY HH:MM:SS format
+void printTime(RtcDateTime now) {
+  char dateTime[25];
+  snprintf(dateTime, sizeof(dateTime), "%02u-%02u-%04u %02u:%02u:%02u",
+           now.Day(), now.Month(), now.Year(), now.Hour(), now.Minute(), now.Second());
+
+  Serial.println(dateTime);
 }

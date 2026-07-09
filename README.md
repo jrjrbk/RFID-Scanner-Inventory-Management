@@ -5,7 +5,8 @@ VS Code Extension:
 PlatformIO
 
 Library Dependencies:
-
+|-- MFRC522 @ 1.4.12
+|-- SPI @ 1.0
 Components Used:
 
 Arduino UNO R3

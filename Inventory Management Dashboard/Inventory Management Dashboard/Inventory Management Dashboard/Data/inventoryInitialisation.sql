@@ -1,0 +1,20 @@
+﻿CREATE TABLE Staff(
+staffID INTEGER PRIMARY KEY AUTOINCREMENT,
+uid VARCHAR(12) UNIQUE NOT NULL, --including the spaces
+name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Inventory(
+inventoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+uid VARCHAR(12) UNIQUE NOT NULL,
+name VARCHAR(50) NOT NULL,
+status VARCHAR(50) -- "e.g: Available, Borrowed, Missing"
+);
+
+CREATE TABLE Logs(
+logID INTEGER PRIMARY KEY AUTOINCREMENT,
+staffID INT REFERENCES Staff(staffID),
+inventoryID INT REFERENCES Inventory(inventoryID),
+borrowedTime DATETIME NOT NULL,
+returnedTime DATETIME NULL
+);

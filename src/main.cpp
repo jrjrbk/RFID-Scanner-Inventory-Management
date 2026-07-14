@@ -78,7 +78,7 @@ void loop() {
       nuidPICC[i] = mfrc5222.uid.uidByte[i];
     }
 
-    Serial.println(F("The NUID tag is:"));
+    Serial.print(F("NUID:"));
     dumpByteArray(mfrc5222.uid.uidByte, mfrc5222.uid.size);
     RtcDateTime now = Rtc.GetDateTime();
     printTime(now);
@@ -121,5 +121,6 @@ void printTime(RtcDateTime now) {
   snprintf(dateTime, sizeof(dateTime), "%02u-%02u-%04u %02u:%02u:%02u",
            now.Day(), now.Month(), now.Year(), now.Hour(), now.Minute(), now.Second());
 
+  Serial.print("Time: ");
   Serial.println(dateTime);
 }

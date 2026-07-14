@@ -19,14 +19,24 @@ namespace Inventory_Management_Dashboard
             Console.WriteLine("helloworld");
             
             var RFIDReader = new SerialReader();
-            RFIDReader.RFIDDataReceived += (data) =>
-            {
-                Console.WriteLine($"SUCCESS - Data Received in Program.cs: {data}");
-            };
+            RFIDReader.RFIDDataReceived += RFIDDataReceivedHandler;
+
             RFIDReader.StartReading("COM14", 9600);
             Console.WriteLine("Press any key to stop");
             Console.ReadKey();
             RFIDReader.StopReading();
+        }
+
+        static void RFIDDataReceivedHandler(string data)
+        {
+            string UID;
+            Console.WriteLine($"Data received: {data}");
+            
+            if (data.Contains(":"))
+            {
+                UID = data.Split(':')[1].Trim();
+                Console.WriteLine(UID);
+            }
         }
     }
 }

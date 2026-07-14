@@ -27,7 +27,7 @@ void printTime(RtcDateTime);
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600); // Intialize serial communication with 9600 baud rate aka bits of data per second
+  Serial.begin(9600); // Intialize serial communication with 9600 (default) baud rate aka bits of data per second
 
   while (!Serial);     // Do nothing if no serial port opened
   SPI.begin();         // Initialize SPI bus (Allows communication of SDA_PIN and RST_PIN)

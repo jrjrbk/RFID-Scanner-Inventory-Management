@@ -10,6 +10,7 @@ namespace Inventory_Management_Dashboard.Services
     internal class SerialReader
     {
         SerialPort _serialPort = new SerialPort();
+        StringBuilder _buffer = new StringBuilder();
         public event Action<string> RFIDDataReceived;
 
         //Constructor
@@ -69,13 +70,30 @@ namespace Inventory_Management_Dashboard.Services
         {
             try
             {
-                // Read all the data currently in the buffer
-                string data = _serialPort.ReadLine();
-                if (!string.IsNullOrEmpty(data))
+                string chunk = _serialPort.ReadExisting();
+                _buffer.Append(chunk);
+
+                string currentText = _buffer.ToString();
+
+                int lineEnd = currentText.IndexOf('\n');
+
+                while (lineEnd != -1)
                 {
-                    // Fire event, passing data to subscriber
-                    RFIDDataReceived?.Invoke(data.Trim());
-                    //Console.WriteLine(data.Trim());
+                    // Extract single line from buffer
+                    string line = currentText.Substring(0, lineEnd).Trim();
+
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        // Fire event, passing data to subscriber
+                        RFIDDataReceived?.Invoke(line);
+                        //Console.WriteLine(data.Trim());
+                    }
+
+                    // Remove the line from buffer
+                    _buffer.Remove(0, lineEnd + 1);
+
+                    currentText = _buffer.ToString();
+                    lineEnd = currentText.IndexOf('\n');
                 }
             }
 

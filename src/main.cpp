@@ -118,8 +118,8 @@ void dumpByteArray(byte *buffer, byte bufferSize) {
 // Prints time in DD-MM-YYYY HH:MM:SS format
 void printTime(RtcDateTime now) {
   char dateTime[25];
-  snprintf(dateTime, sizeof(dateTime), "%02u-%02u-%04u %02u:%02u:%02u",
-           now.Day(), now.Month(), now.Year(), now.Hour(), now.Minute(), now.Second());
+  snprintf(dateTime, sizeof(dateTime), "%04u-%02u-%02u %02u:%02u:%02u",
+           now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second());
 
   Serial.print("Time: ");
   Serial.println(dateTime);

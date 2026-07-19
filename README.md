@@ -6,12 +6,13 @@ An RFID Scanner to manage inventory.
 
 ## Environment & Dependencies
 
-* **Editor:** VS Code
+* **Editor:** VS Code, Visual Studio
 * **Extension:** PlatformIO
 * **Library Dependencies:**
   * `MFRC522 @ 1.4.12`
   * `makuna/RTC @ ^2.5.0`
   * `SPI @ 1.0`
+* **Framework:** .NET Framework WinForm 
 
 ## Components Used
 

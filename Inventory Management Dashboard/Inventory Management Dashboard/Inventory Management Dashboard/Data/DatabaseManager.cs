@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Data.Sqlite;
@@ -16,36 +16,51 @@ namespace Inventory_Management_Dashboard.Data
         // INSERT
         public void InsertInventoryItem(string uid, string name, string status)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            try
             {
-                connection.Open();
-                string insertQuery = "INSERT INTO Inventory (uid,name,status) VALUES($uid,$name,$status);";
-
-                using (var command = new SqliteCommand(insertQuery, connection))
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("$uid", uid);
-                    command.Parameters.AddWithValue("$name", name);
-                    command.Parameters.AddWithValue("$status", status);
+                    connection.Open();
+                    string insertQuery = "INSERT INTO Inventory (uid,name,status) VALUES($uid,$name,$status);";
 
-                    // Used for commands that don't return any data, like INSERT, UPDATE, DELETE.
-                    command.ExecuteNonQuery();
+                    using (var command = new SqliteCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$uid", uid);
+                        command.Parameters.AddWithValue("$name", name);
+                        command.Parameters.AddWithValue("$status", status);
+
+                        // Used for commands that don't return any data, like INSERT, UPDATE, DELETE.
+                        command.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
         public void InsertStaffMember(string uid, string name)
         {
-            using(var connection = new SqliteConnection(connectionString))
+            try
             {
-                string insertQuery = "INSERT INTO Staff (uid, name) VALUES ($uid,$name)";
-
-                using(var command = new SqliteCommand(insertQuery))
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("$uid", uid);
-                    command.Parameters.AddWithValue("$name", name);
+                    connection.Open();
+                    string insertQuery = "INSERT INTO Staff (uid, name) VALUES ($uid,$name)";
 
-                    command.ExecuteNonQuery();
+                    using (var command = new SqliteCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$uid", uid);
+                        command.Parameters.AddWithValue("$name", name);
+
+                        command.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -77,64 +92,88 @@ namespace Inventory_Management_Dashboard.Data
         }
 
         // UPDATE
-        public void updateInventoryItemStatus(string uid, string newStatus)
-        { 
-            using(var connection = new SqliteConnection(connectionString))
+        public void updateInventoryItemStatus(int id, string newStatus)
+        {
+            try
             {
-                connection.Open();
-                string updateQuery = "UPDATE Inventory SET status = $newStatus WHERE uid = $uid ";
-                using (var command = new SqliteCommand(updateQuery, connection)) 
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("$newStatus", newStatus);
-                    command.Parameters.AddWithValue("$uid", uid);
+                    connection.Open();
+                    string updateQuery = "UPDATE Inventory SET status = $newStatus WHERE inventoryID = $id ";
+                    using (var command = new SqliteCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$newStatus", newStatus);
+                        command.Parameters.AddWithValue("$id", id);
 
-                    command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
         public void updateLogEntryReturnTime(int logID, string returnTime)
         {
-            using(var connection = new SqliteConnection(connectionString)) 
+            try
             {
-                connection.Open();
-                string updateQuery = "UPDATE Logs SET returnTime = $returnTime WHERE logID = $logID";
-                using (var command = new SqliteCommand(updateQuery, connection)) 
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("$returnTime", returnTime);
-                    command.Parameters.AddWithValue("$logID", logID);
+                    connection.Open();
+                    string updateQuery = "UPDATE Logs SET returnedTime = $returnTime WHERE logID = $logID";
+                    using (var command = new SqliteCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$returnTime", returnTime);
+                        command.Parameters.AddWithValue("$logID", logID);
 
-                    command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         // SELECT
         public List<InventoryItem> selectAllInventoryItems()
         {
             var inventoryItems = new List<InventoryItem>();
-            using (var connection = new SqliteConnection(connectionString))
+            try
             {
-                connection.Open();
-                string selectQuery = "SELECT * FROM Inventory";
-                using (var command = new SqliteCommand(selectQuery, connection))
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    string selectQuery = "SELECT * FROM Inventory";
+                    using (var command = new SqliteCommand(selectQuery, connection))
                     {
-                        while (reader.Read())
+                        using (var reader = command.ExecuteReader())
                         {
-                            var item = new InventoryItem
+                            while (reader.Read())
                             {
-                                inventoryID = reader.GetInt32(0),
-                                uid = reader.GetString(1),
-                                name = reader.GetString(2),
-                                status = reader.GetString(3)
-                            };
-                            inventoryItems.Add(item);
+                                var item = new InventoryItem
+                                {
+                                    inventoryID = reader.GetInt32(0),
+                                    uid = reader.GetString(1),
+                                    name = reader.GetString(2),
+                                    status = reader.GetString(3)
+                                };
+                                inventoryItems.Add(item);
+                            }
                         }
                     }
                 }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+
             return inventoryItems;
         }
 
@@ -174,30 +213,38 @@ namespace Inventory_Management_Dashboard.Data
             return staffMembers;
         }
 
-        public List<LogEntry> selectAllLogEntries()
+        public List<FormLogEntries> selectAllLogEntries()
         {
-            var logEntries = new List<LogEntry>();
-            using (var connection = new SqliteConnection(connectionString))
+            var logEntries = new List<FormLogEntries>();
+            try
             {
-                connection.Open();
-                string selectQuery = "SELECT * FROM Logs;";
-                using (var command = new SqliteCommand(selectQuery, connection))
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    string selectQuery = "SELECT Logs.logID, Staff.name, Inventory.name, Logs.borrowedTime, Logs.returnedTime FROM Logs JOIN Staff ON Logs.staffID = Staff.staffID JOIN Inventory ON Logs.inventoryID = Inventory.inventoryID;";
+                    using (var command = new SqliteCommand(selectQuery, connection))
                     {
-                        while (reader.Read())
+                        using (var reader = command.ExecuteReader())
                         {
-                            var item = new LogEntry
+                            while (reader.Read())
                             {
-                                logID = reader.GetInt32(0),
-                                staffID = reader.GetInt32(1),
-                                inventoryID = reader.GetInt32(2),
-                                borrowedTime = reader.GetString(3),
-                                returnedTime = reader.IsDBNull(4) ? null : reader.GetString(4)
-                            };
+                                var item = new FormLogEntries
+                                {
+                                    logID = reader.GetInt32(0),
+                                    staffName = reader.GetString(1),
+                                    inventoryName = reader.GetString(2),
+                                    borrowedTime = reader.GetString(3),
+                                    returnedTime = reader.IsDBNull(4) ? null : reader.GetString(4)
+                                };
+                                logEntries.Add(item);
+                            }
                         }
                     }
                 }
+            }
+            catch(Exception ex)
+            { 
+                Console.WriteLine($"Error:{ex.Message}");
             }
 
             return logEntries;
@@ -299,6 +346,50 @@ namespace Inventory_Management_Dashboard.Data
             
             
             return inventoryItem;
+        }
+
+        // REMOVE
+        public void RemoveStaffMember(int staffID)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(connectionString))
+                {
+                    connection.Open();
+                    string deleteQuery = "DELETE FROM Staff WHERE staffID = $staffID";
+                    using (var command = new SqliteCommand(deleteQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$staffID", staffID);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in RemoveStaffMember: {ex.Message}");
+            }
+        }
+
+        public void RemoveInventoryItem(int inventoryID)
+        {
+            try
+            {
+                using(var connection = new SqliteConnection(connectionString))
+                {
+                    connection.Open();
+                    string deleteQuery = "DELETE FROM Inventory WHERE inventoryID = $inventoryID";
+                    using (var command = new SqliteCommand(deleteQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("$inventoryID", inventoryID);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in RemoveInventoryItem: {ex.Message}");
+            }
         }
     }
 }

@@ -66,6 +66,14 @@ namespace Inventory_Management_Dashboard.Services
             }
         }
 
+        public void SendCommand(string command)
+        {
+            if (_serialPort.IsOpen)
+            {
+                _serialPort.WriteLine(command);
+            }
+        }
+
         void PortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try

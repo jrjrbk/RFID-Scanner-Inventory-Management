@@ -10,6 +10,7 @@
 // Configuration SPI BUS
 #define RST_PIN 9  // Allows Arduino to reset/wake/power off RC522
 #define SDA_PIN 10 // Slave Select, enables Arduino to talk to RFID Reader
+#define BUZZER_PIN 2
 
 ThreeWire myWire(6, 5, 7);
 RtcDS1302<ThreeWire> Rtc(myWire);
@@ -29,9 +30,10 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600); // Intialize serial communication with 9600 (default) baud rate aka bits of data per second
 
-  while (!Serial);     // Do nothing if no serial port opened
-  SPI.begin();         // Initialize SPI bus (Allows communication of SDA_PIN and RST_PIN)
-  mfrc5222.PCD_Init(); // Initialise MFRC522
+  while (!Serial);             // Do nothing if no serial port opened
+  SPI.begin();                 // Initialize SPI bus (Allows communication of SDA_PIN and RST_PIN)
+  mfrc5222.PCD_Init();         // Initialise MFRC522
+  pinMode(BUZZER_PIN, OUTPUT); // Initialise buzzer
 
   Rtc.Begin();
   // Rtc.SetDateTime(RtcDateTime(__DATE__, __TIME__)); //Initial date/time set. No need to run it again.
@@ -44,6 +46,20 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "SUCCESS") {
+      tone(BUZZER_PIN, 1000, 200);
+    } else if (command == "ERROR") {
+      tone(BUZZER_PIN, 200, 400);
+      delay(200);
+      noTone(BUZZER_PIN);
+      delay(100);
+      tone(BUZZER_PIN, 200, 400);
+    }
+  }
   // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle
   if (!mfrc5222.PICC_IsNewCardPresent()) {
     return;

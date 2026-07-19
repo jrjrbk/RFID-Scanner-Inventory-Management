@@ -31,6 +31,8 @@
             button1 = new Button();
             dataGridView1 = new DataGridView();
             checkInventoryButton = new Button();
+            comboBox1 = new ComboBox();
+            portsUsed = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -65,11 +67,32 @@
             checkInventoryButton.UseVisualStyleBackColor = true;
             checkInventoryButton.Click += button2_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(349, 31);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(121, 23);
+            comboBox1.TabIndex = 3;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            // 
+            // portsUsed
+            // 
+            portsUsed.AutoSize = true;
+            portsUsed.Location = new Point(380, 13);
+            portsUsed.Name = "portsUsed";
+            portsUsed.Size = new Size(62, 15);
+            portsUsed.TabIndex = 4;
+            portsUsed.Text = "Using Port";
+            portsUsed.Click += label1_Click;
+            // 
             // MainDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(829, 586);
+            Controls.Add(portsUsed);
+            Controls.Add(comboBox1);
             Controls.Add(checkInventoryButton);
             Controls.Add(dataGridView1);
             Controls.Add(button1);
@@ -78,6 +101,7 @@
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -85,5 +109,7 @@
         private Button button1;
         private DataGridView dataGridView1;
         private Button checkInventoryButton;
+        private ComboBox comboBox1;
+        private Label portsUsed;
     }
 }

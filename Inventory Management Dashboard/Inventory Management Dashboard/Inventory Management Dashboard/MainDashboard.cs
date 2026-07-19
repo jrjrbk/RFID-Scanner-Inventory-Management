@@ -1,6 +1,7 @@
 using Inventory_Management_Dashboard.Data;
 using Inventory_Management_Dashboard.Models;
 using Inventory_Management_Dashboard.Services;
+using System.IO.Ports;
 using System.Security.Cryptography;
 
 namespace Inventory_Management_Dashboard
@@ -9,6 +10,7 @@ namespace Inventory_Management_Dashboard
     {
         // The list of UIDs that have been read from the RFID reader.
         SerialReader RFIDReader = new SerialReader();
+        string[] availablePorts = SerialPort.GetPortNames();
         static List<string> UID = new List<string>();
         static StaffMember staff = null;
         static InventoryItem item = null;
@@ -27,10 +29,20 @@ namespace Inventory_Management_Dashboard
             var logEntries = db.selectAllLogEntries();
             dataGridView1.DataSource = logEntries;
 
-            
-            RFIDReader.RFIDDataReceived += RFIDDataReceivedHandler;
 
-            RFIDReader.StartReading("COM14", 9600);
+            RFIDReader.RFIDDataReceived += RFIDDataReceivedHandler;
+            RefreshComPorts();
+            
+            
+            if(availablePorts.Length > 0)
+            {
+                Console.WriteLine($"Auto-detected scanner on port: {availablePorts[0]}");
+                RFIDReader.StartReading(availablePorts[0], 9600);
+            }
+            else
+            {
+                MessageBox.Show("No scanner detected! Please plug in the Arduino!");
+            }
             //Console.WriteLine("Press any key to stop");
             //Console.ReadKey();
             //RFIDReader.StopReading();
@@ -78,7 +90,7 @@ namespace Inventory_Management_Dashboard
                         staff = db.selectStaffMemberByUID(UID[0]);
                         if (staff == null)
                         {
-                            MessageBox.Show($"The UID {UID[0]} is not a valid staff UID. Please scan a valid staff card.");
+                            Console.WriteLine($"The UID {UID[0]} is not a valid staff UID. Please scan a valid staff card.");
                             UID.Clear(); // Clear the list if the first UID is not a staff UID
                             dateTime = "";
                             RFIDReader.SendCommand("ERROR");
@@ -96,7 +108,7 @@ namespace Inventory_Management_Dashboard
                         item = db.selectInventoryItemByUID(UID[1]);
                         if (item == null)
                         {
-                            MessageBox.Show($"The UID {UID[1]} is not a valid inventory UID. Please scan a valid inventory item.");
+                            Console.WriteLine($"The UID {UID[1]} is not a valid inventory UID. Please scan a valid inventory item.");
                             UID.RemoveAt(1); // Remove the second UID if it's not a valid inventory UID
                             RFIDReader.SendCommand("ERROR");
                             return; // Exit the method to wait for a new inventory UID
@@ -159,6 +171,46 @@ namespace Inventory_Management_Dashboard
             }));
         }
 
-        
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedItem != null)
+            {
+                RFIDReader.StopReading();
+
+                string selectedPort = comboBox1.SelectedItem.ToString();
+                RFIDReader.StartReading(selectedPort, 9600);
+            }
+            
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RefreshComPorts()
+        {
+            comboBox1.Items.Clear();
+
+            
+            availablePorts = SerialPort.GetPortNames();
+            comboBox1.Items.AddRange(availablePorts);
+            if (availablePorts.Length > 0)
+            {
+                comboBox1.SelectedIndex = 0; // Select the first available port by default
+            }
+
+            
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            if (m.Msg == 0x0219) // WM_DEVICECHANGE aka USB device is plugged in
+            {
+                RefreshComPorts();
+            }
+        }
     }
 }

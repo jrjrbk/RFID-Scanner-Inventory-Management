@@ -8,6 +8,7 @@ namespace Inventory_Management_Dashboard
     public partial class MainDashboard : Form
     {
         // The list of UIDs that have been read from the RFID reader.
+        SerialReader RFIDReader = new SerialReader();
         static List<string> UID = new List<string>();
         static StaffMember staff = null;
         static InventoryItem item = null;
@@ -26,7 +27,7 @@ namespace Inventory_Management_Dashboard
             var logEntries = db.selectAllLogEntries();
             dataGridView1.DataSource = logEntries;
 
-            var RFIDReader = new SerialReader();
+            
             RFIDReader.RFIDDataReceived += RFIDDataReceivedHandler;
 
             RFIDReader.StartReading("COM14", 9600);
@@ -80,10 +81,12 @@ namespace Inventory_Management_Dashboard
                             MessageBox.Show($"The UID {UID[0]} is not a valid staff UID. Please scan a valid staff card.");
                             UID.Clear(); // Clear the list if the first UID is not a staff UID
                             dateTime = "";
+                            RFIDReader.SendCommand("ERROR");
                         }
                         else
                         {
                             Console.WriteLine($"The UID {UID[0]} is valid with staff {staff.name}");
+                            RFIDReader.SendCommand("SUCCESS");
                         }
                     }
 
@@ -95,6 +98,7 @@ namespace Inventory_Management_Dashboard
                         {
                             MessageBox.Show($"The UID {UID[1]} is not a valid inventory UID. Please scan a valid inventory item.");
                             UID.RemoveAt(1); // Remove the second UID if it's not a valid inventory UID
+                            RFIDReader.SendCommand("ERROR");
                             return; // Exit the method to wait for a new inventory UID
                         }
                         else
@@ -105,6 +109,7 @@ namespace Inventory_Management_Dashboard
                             // Clear the list after processing the transaction
                             UID.Clear();
                             dateTime = ""; // Reset the dateTime after processing the transaction
+                            RFIDReader.SendCommand("SUCCESS");
                         }
                     }
                 }
@@ -134,15 +139,16 @@ namespace Inventory_Management_Dashboard
                 // 2. if exist, update the log entry with current timestamp as returned time
                 db.updateLogEntryReturnTime(log.logID, dateTime);
                 db.updateInventoryItemStatus(inventoryID, "Available");
+                RFIDReader.SendCommand("COMPLETE");
             }
             // 2. If no log entry exists, then create a new log entry with current timestamp
             else
             {
-
                 MessageBox.Show("Log entry does not exists!");
                 Console.WriteLine($"Creating entry with:\nstaffID: {staffID}\ninventoryID: {inventoryID}\ndateTime: {dateTime}");
                 db.InsertLogEntry(staffID, inventoryID, dateTime);
                 db.updateInventoryItemStatus(inventoryID, "Borrowed");
+                RFIDReader.SendCommand("COMPLETE");
             }
 
             var logEntries = db.selectAllLogEntries();

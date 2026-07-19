@@ -147,7 +147,7 @@ namespace Inventory_Management_Dashboard
             // 1. Check whether the item is currently borrowed or not
             if (log != null)
             {
-                MessageBox.Show($"Log entry exists! ID: {log.logID}");
+                Console.WriteLine($"Log entry exists! ID: {log.logID}");
                 // 2. if exist, update the log entry with current timestamp as returned time
                 db.updateLogEntryReturnTime(log.logID, dateTime);
                 db.updateInventoryItemStatus(inventoryID, "Available");

@@ -1,6 +1,6 @@
 # RFID-Scanner-Inventory-Management
 
-An RFID Scanner to manage inventory. 
+A full-stack hardware and software solution for automated inventory management, bridging Arduino microcontroller firmware with a custom .NET desktop dashboard.
 
 ## Features
 * **Real-Time Tracking:** Captures RFID Tags and instantly updates the UI dashboard

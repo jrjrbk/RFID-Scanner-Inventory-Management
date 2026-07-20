@@ -2,7 +2,27 @@
 
 An RFID Scanner to manage inventory. 
 
-> **Note:** Data UID Lookup is stored securely in the Microcontroller's EEPROM.
+## Features
+* **Real-Time Tracking:** Captures RFID Tags and instantly updates the UI dashboard
+* **Hardware Feedback:** Incorporates a buzzer for instant feedback and an RTC Module for accurate timestamping
+* **Local Storage:** Utilises a local SQLite database for persistent inventory data and staff records
+
+## Usage
+1. Open the desktop app
+2. Connect the Arduino to identify COM Port
+3. Scan a Staff RFID Card for authentication
+4. Scan an Inventory RFID tag to log an item as borrowed or returned.
+
+## Installation & Setup
+### Hardware
+1. Ensure PlatformIO is installed and Arduino is connected (Needs an RFID Module and a RTC Module)
+2. Build and upload to Arduino using
+ > pio run -t upload
+
+### Software
+1. Open the .sln file in Visual Studio
+2. Install dependencies using NuGet
+3. Build and run the code
 
 ## Environment & Dependencies
 

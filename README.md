@@ -43,6 +43,7 @@ A full-stack hardware and software solution for automated inventory management, 
 * MB-102 Breadboard
 * Jumper Wires & Resistors
 * USB Cable
+* Passive Buzzer
 
 ## Wiring & Pin Connections
 
